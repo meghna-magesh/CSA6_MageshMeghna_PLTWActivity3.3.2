@@ -1,4 +1,4 @@
-/**
+/** 
  * Activity 3.3.2
  *
  * A game board of NxM board of tiles.
@@ -13,12 +13,15 @@ public class Board
                                         "monkey", "monkey",
                                         "turtle", "turtle"}; 
   private Tile[][] gameboard = new Tile[3][4];
+  // CODE TO ADD
+int tileCount = tileValues.length - 1;
 
   /**  
    * Constructor for the game. Creates the 2D gameboard
    * by populating it with card values
    * 
    */
+
   public Board()
   {
     int index = 0;
@@ -27,13 +30,18 @@ public class Board
     {
       for (int col = 0; col < gameboard[row].length; col++)
       {
-        gameboard[row][col] = new Tile(tileValues[index]);
-        index++;
+        /*gameboard[row][col] = new Tile(tileValues[index]);
+        index++;;*/
+        // CODE TO ADD
+        int r = (int)(Math.random() * tileCount);
+        gameboard[row][col] = new Tile(tileValues[r]);
+        tileValues[r] = tileValues[tileCount];
+        tileCount--;
       }
     }
   }
 
-  /** 
+ /** 
    * Returns a string representation of the board, getting the state of
    * each tile. If the tile is showing, displays its value, 
    * otherwise displays it as hidden.
@@ -42,8 +50,25 @@ public class Board
    * 
    * @return a string represetation of the board
    */
-  
+  public String toString()
+  {
+      String result = "";
 
+      for (Tile[] row : gameboard)
+      {
+          for (Tile tile : row)
+          {
+              if (tile.isShowingValue()) {
+                  result += tile.getValue() + "\t"; 
+              } else {
+                  result += tile.getHidden() + "\t"; 
+              }
+          }
+          result += "\n";
+      }
+
+      return result;
+  }
 
   /** 
    * Determines if the board is full of tiles that have all been matched,
@@ -53,18 +78,19 @@ public class Board
    * 
    * @return true if all tiles have been matched, false otherwse
    */
-  public boolean allTilesMatch()
-  {
-    for (Tile[] row : gameboard)
-    {
-      for (Tile tile : row)
-      {
-        if (!tile.matched())
-          return false;
+  public boolean allTilesMatch() {
+      for (Tile[] row : gameboard) 
+        {
+          for (Tile tile : row) 
+            {
+              if (!tile.matched()) {
+                  return false;
+              }
+          }
       }
-    }
-    return true;
+      return true;
   }
+
 
   /** 
    * Sets the tile to show its value (like a playing card face up)
@@ -79,6 +105,7 @@ public class Board
    */
   public void showValue (int row, int column)
   {
+   
     gameboard[row][column].show();
   }  
 
@@ -99,45 +126,44 @@ public class Board
    * @param col2 the column vlue of Tile 2
    * @return a message indicating whether or not a match occured
    */
-  public String checkForMatch(int row1, int col1, int row2, int col2)
-  {
-    String msg = "";
+  public String checkForMatch(int row1, int col1, int row2, int col2) {
+      Tile tile1 = gameboard[row1][col1];
+      Tile tile2 = gameboard[row2][col2];
+      String msg = "";
 
-    Tile t1 = gameboard[row1][col1];
-    Tile t2 = gameboard[row2][col2];
+      tile1.show();
+      tile2.show();
+      if (tile1.equals(tile2)) {
+          tile1.foundMatch();
+          tile2.foundMatch();
+          msg = "You found a match: " + tile1.getValue() + "!";
+      } else {
+          tile1.hide();
+          tile2.hide();
+          msg = "Tiles do not match. Try again.";
+      }
 
-    if (t1.equals(t2))
-    {
-      t1.foundMatch();
-      t2.foundMatch();
-      msg = "Tiles match!";
-    }
-    else
-    {
-      t1.hide();
-      t2.hide();
-      msg = "Tiles do not match.";
-    }
-
-    return msg;
+      return msg;
   }
+
 
   /** 
    * Checks the provided values fall within the range of the gameboard's dimension
    * and that the tile has not been previously matched
    * 
-   * @param row the row value of Tile
+   * @param rpw the row value of Tile
    * @param col the column value of Tile
    * @return true if row and col fall on the board and the row,col tile is unmatched, false otherwise
    */
-  public boolean validateSelection(int row, int col)
-  {
-    if (row < 0 || col < 0 || row >= gameboard.length || col >= gameboard[0].length)
-      return false;
-
-    if (gameboard[row][col].matched())
-      return false;
-
-    return true;
+  public boolean validateSelection(int row, int col) {
+      if (row < 0 || row >= gameboard.length || col < 0 || col >= gameboard[0].length) {
+          return false;
+      }
+      if (gameboard[row][col].matched()) {
+          return false;
+      }
+      return true;
   }
+
+
 }
